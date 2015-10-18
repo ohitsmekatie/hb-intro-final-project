@@ -1,12 +1,24 @@
 import random
 
+import os, sys, inspect
+
+# use this if you want to include modules from a subfolder
+cmd_subfolder = os.path.realpath(os.path.abspath(os.path.join(os.path.split(inspect.getfile( inspect.currentframe() ))[0],"colorama")))
+if cmd_subfolder not in sys.path:
+    sys.path.insert(0, cmd_subfolder)
+
+from colorama import init
+init()
+
+from colorama import Fore, Back, Style
+
 # TODO add pizza method  store at the end of game
 # TODO you need to fix what happens when people press a # that's not 1 or 2!
-# TODO add some more events to maybe make the game more interesting?
 # TODO style that shit, yo!
 # TODO do you want to try to add probability?
 # TODO what about adding some bad guys?
 
+# the start of the pizza shop
 # def pizza_store():
 #     print """
 #     You have magically been transformed to Spak Brothers Pizza in Pittsburgh, PA.
@@ -23,35 +35,33 @@ import random
 #     """
 #     response = raw_input("What would you like get? You have %i to spend") % (self.money)
 
-
-
 class Game(object):
     def __init__(self):
         self.money = 1
 
     def play(self):
-        print self.introduction
+        print (Fore.YELLOW + self.introduction + Fore.RESET)
 
         while True:
             print
-            print self.location.description
+            print (Fore.MAGENTA + self.location.description + Fore.RESET)
             self.transition()
 
             choice = random.choice(self.location.events)
             self.money += choice.money
-            print choice.message
+            print (Fore.MAGENTA + choice.message + Fore.RESET)
             if self.money >= 40:
-                print "\n\nYou've have $%i! You definitely have enough for a pizza - MAYBE EVEN 2! " % (self.money)
+                print (Fore.YELLOW +"\n\nYou've have $%i! You definitely have enough for a pizza - MAYBE EVEN 2! " + Fore.RESET) % (self.money)
                 exit(1)
-            print "Pizza Money: %d" % self.money
+            print (Fore.GREEN + "Pizza Money: %d" % self.money + Fore.RESET)
 
     def transition(self):
         transitions = self.location.transitions
-        print "Where do you want to go? "
+        print (Fore.BLUE + "Where do you want to go? " + Fore.RESET)
         for (index, transition) in enumerate(transitions):
             print index +1, transition.title
 
-        choice = int(raw_input("Choose a room or type 0 to exit. "))
+        choice = int(raw_input(Fore.BLUE + "Choose a room or type 0 to exit. " + Fore.RESET))
         if choice == 0:
             exit(0)
         else:
@@ -72,8 +82,20 @@ class CurrentGame(Game):
     def __init__(self):
         super(CurrentGame, self).__init__()
         self.introduction = """
+_____________________________________________________________________________________
+_____________________________________________________________________________________
+
 Hello! Welcome to the Subway Pizza Adventure! You're Brian the cat and you love pizza!
-Navigate around the Subway to find $$ to buy pizza
+
+_____________________________________________________________________________________
+_____________________________________________________________________________________
+
+
+||==================================================||
+||==================================================||
+||Navigate around the Subway to find $$ to buy pizza||
+||==================================================||
+||==================================================||
 """
 
 
@@ -90,7 +112,7 @@ Navigate around the Subway to find $$ to buy pizza
         upstairs = Place("Upstairs Platform", "You are on the upstairs platform of the subway",
             (Event("You see a backpack in the corner. $5!", 5),
             Event("There's a guy giving out free money!! Iknorite? $3",3),
-            Event("You got robbed. Sad panda", -30)))
+            Event("You got robbed. Sad panda", -2)))
 
         subwayCar = Place("Subway Car", "You are in the car of the subway ",
             (Event("You see a fanny pack lying on the ground. Awesome, $30", 30),
